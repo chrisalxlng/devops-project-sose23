@@ -2,8 +2,6 @@ FROM node:16-alpine
 
 ENV LOCAL_DIR=/app
 ENV TEMP_CLIENT_PATH=$LOCAL_DIR/client
-ENV DATA_DIR=$LOCAL_DIR/data
-ENV LOG_DIR=$LOCAL_DIR/logs
 ENV BUILD_PATH=$LOCAL_DIR/dist
 
 ENV PUBLIC_URL=http://localhost
@@ -17,8 +15,8 @@ WORKDIR $LOCAL_DIR
 # Start with clean slate
 RUN rm -rf $BUILD_PATH
 # Copy server code to build path
-COPY server/src $BUILD_PATH
-COPY server/package*.json $BUILD_PATH
+COPY app/server/src $BUILD_PATH
+COPY app/server/package*.json $BUILD_PATH
 
 WORKDIR $BUILD_PATH
 
@@ -28,11 +26,11 @@ RUN npm install --prod --no-audit --no-fund && rm -rf ./package*
 WORKDIR $TEMP_CLIENT_PATH
 
 # Copy client files to temporary directory
-COPY client/config config
-COPY client/public public
-COPY client/scripts scripts
-COPY client/src src
-COPY client/package*.json .
+COPY app/client/config config
+COPY app/client/public public
+COPY app/client/scripts scripts
+COPY app/client/src src
+COPY app/client/package*.json .
 
 # Install client dependencies
 RUN npm install --production=false --no-audit --no-fund
@@ -48,3 +46,11 @@ WORKDIR $LOCAL_DIR
 RUN rm -rf $TEMP_CLIENT_PATH
 
 CMD PORT=$SERVER_PORT MONGODB_URL=mongodb://$DB_HOST:$DB_PORT/todo-app JWT_SECRET=myjwtsecret node $BUILD_PATH/index.js
+
+# FROM nginx:alpine
+# COPY --from=app /app/build /usr/share/nginx/html
+# COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# EXPOSE 80
+
+# CMD ["nginx", "-g", "daemon off;"]
