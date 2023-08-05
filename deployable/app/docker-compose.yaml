@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  app:
+    image: app:latest
+    container_name: app
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      database:
+        condition: service_healthy
+    links:
+      - database
+
+  database:
+    image: mongo:latest
+    container_name: database
+    command: mongod --port 27017 --bind_ip 0.0.0.0 --logpath /var/log/mongodb/mongod.log --dbpath /data/db
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongodb_data:
