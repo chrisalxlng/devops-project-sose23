@@ -6,7 +6,7 @@ ENV BUILD_PATH=$LOCAL_DIR/dist
 
 ENV PUBLIC_URL=http://localhost
 ENV SERVER_PORT=3000
-ENV SERVER_PUBLIC_URL=$PUBLIC_URL:$SERVER_PORT
+ENV SERVER_PUBLIC_URL=
 ENV DB_HOST=database
 ENV DB_PORT=27017
 
@@ -46,11 +46,3 @@ WORKDIR $LOCAL_DIR
 RUN rm -rf $TEMP_CLIENT_PATH
 
 CMD PORT=$SERVER_PORT MONGODB_URL=mongodb://$DB_HOST:$DB_PORT/todo-app JWT_SECRET=myjwtsecret node $BUILD_PATH/index.js
-
-# FROM nginx:alpine
-# COPY --from=app /app/build /usr/share/nginx/html
-# COPY nginx/default.conf /etc/nginx/conf.d/default.conf
-
-# EXPOSE 80
-
-# CMD ["nginx", "-g", "daemon off;"]

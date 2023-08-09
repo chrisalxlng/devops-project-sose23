@@ -1,20 +1,6 @@
 version: "3.9"
 
 services:
-  app:
-    image: ghcr.io/chrisalxlng/devops-project-sose23:latest
-    platform: linux/amd64
-    container_name: app
-    build:
-      dockerfile: Dockerfile
-    ports:
-      - 3000:3000
-    depends_on:
-      database:
-        condition: service_healthy
-    links:
-      - database
-
   database:
     image: mongo:latest
     container_name: database
@@ -29,5 +15,33 @@ services:
       timeout: 5s
       retries: 5
 
+  app:
+    image: ghcr.io/chrisalxlng/devops-project-sose23:latest
+    platform: linux/amd64
+    container_name: app
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      database:
+        condition: service_healthy
+    links:
+      - database
+    volumes:
+      - app_data:/app/dist/public
+    
+  nginx:
+    build:
+      dockerfile: nginx/Dockerfile
+    container_name: nginx
+    ports:
+      - 80:80
+    depends_on:
+      - app
+    volumes:
+      - app_data:/usr/share/nginx/html
+
 volumes:
   mongodb_data:
+  app_data:
