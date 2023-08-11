@@ -13,8 +13,6 @@ Each of the following environment is represented by its own branch in this repos
 
 - Production (`prod`)
   - The `prod` environment is the place where real-world customers use and depend on this application which is why this environment needs to be stable
-- Staging (`staging`)
-  - The `staging` environment is almost an exact replica of the `prod` environment and is used to test all aspects of the application in a scenario where outer conditions resemble the real-world use case of the `prod` environment
 - Development (`dev`)
   - The `dev` environment is is used during development and can therefore be unstable at times
 
@@ -45,23 +43,15 @@ The described target environments and branching strategy influenced by [this art
 ## Automation Processes & Application Lifecycle
 
 - Development workflows
-  - `push` -> `master`, `pull_request` (feature branch) -> `master`:
+  - `push` -> `master`:
     - Install dependencies
     - Build application
     - Linting
     - Run client tests
     - Run server tests
     - Deploy to `dev` environment
-- Staging workflows
-  - `pull_request` (`master`) -> `staging`:
-    - Install dependencies
-    - Build application
-    - Linting
-    - Run client tests
-    - Run server tests
-    - Deploy to `staging` environment
 - Production workflows
-  - `pull_request` (`staging`) -> `prod`:
+  - `push` -> `master` + explicit approval:
     - Install dependencies
     - Build application
     - Linting

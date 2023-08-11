@@ -2,9 +2,10 @@ version: "3.9"
 
 services:
   database:
-    image: mongo:latest
+    image: ${DATABASE_IMAGE_TAG}
     container_name: database
-    command: mongod --port 27017 --bind_ip 0.0.0.0 --logpath /var/log/mongodb/mongod.log --dbpath /data/db
+    build:
+      dockerfile: database/Dockerfile
     ports:
       - 27017:27017
     volumes:
@@ -16,7 +17,7 @@ services:
       retries: 5
 
   app:
-    image: ghcr.io/chrisalxlng/devops-project-sose23:latest
+    image: ${APP_IMAGE_TAG}
     platform: linux/amd64
     container_name: app
     build:
@@ -32,6 +33,7 @@ services:
       - app_data:/app/dist/public
     
   nginx:
+    image: ${NGINX_IMAGE_TAG}
     build:
       dockerfile: nginx/Dockerfile
     container_name: nginx

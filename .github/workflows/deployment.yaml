@@ -1,0 +1,45 @@
+name: Resusable deployment workflow
+
+on:
+  workflow_call:
+    inputs:
+      target-env:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.target-env }}
+    permissions:
+      contents: none
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.target-env }}
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: node-app
+
+      - name: unzip artifact for deployment
+        run: unzip release.zip
+
+      - name: "Deploy to Azure Dev WebApp"
+        if:  inputs.target-env == 'Development'
+        id: deploy-to-webapp-dev
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${ { secrets.AZURE_WEBAPP_SERVICE_NAME } }
+          slot-name: "production"
+          publish-profile: ${ { secrets.AZURE_WEBAPP_PUBLISH_PROFILE } }
+          package: '.'
+
+      - name: "Deploy to Azure Prod WebApp"
+        if:  inputs.target-env == 'Production'
+        id: deploy-to-webapp-prod
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${ { secrets.AZURE_WEBAPP_SERVICE_NAME_PROD } }
+          slot-name: "production"
+          publish-profile: ${ { secrets.AZURE_WEBAPP_PUBLISH_PROFILE_PROD } }
+          package: '.'
