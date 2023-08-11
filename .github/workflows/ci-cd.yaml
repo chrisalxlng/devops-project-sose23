@@ -10,67 +10,97 @@ env:
   APP_IMAGE_TAG: ghcr.io/${{ github.REPOSITORY }}:${{ github.SHA }}-${{ github.RUN_NUMBER }}-app
   NGINX_IMAGE_TAG: ghcr.io/${{ github.REPOSITORY }}:${{ github.SHA }}-${{ github.RUN_NUMBER }}-nginx
 
-  DATABASE_RELEASE_IMAGE_TAG:  ghcr.io/${{ github.REPOSITORY }}:0.0.${{ github.RUN_NUMBER }}-database
-  APP_RELEASE_IMAGE_TAG:  ghcr.io/${{ github.REPOSITORY }}:0.0.${{ github.RUN_NUMBER }}-app
-  NGINX_RELEASE_IMAGE_TAG:  ghcr.io/${{ github.REPOSITORY }}:0.0.${{ github.RUN_NUMBER }}-nginx
+  DATABASE_RELEASE_IMAGE_TAG: ghcr.io/${{ github.REPOSITORY }}:0.0.${{ github.RUN_NUMBER }}-database
+  APP_RELEASE_IMAGE_TAG: ghcr.io/${{ github.REPOSITORY }}:0.0.${{ github.RUN_NUMBER }}-app
+  NGINX_RELEASE_IMAGE_TAG: ghcr.io/${{ github.REPOSITORY }}:0.0.${{ github.RUN_NUMBER }}-nginx
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
     - name: Login into ghcr
       run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.REPOSITORY_OWNER }} --password-stdin
+
     - name: Build the tagged images
       env: 
         DATABASE_IMAGE_TAG: ${{ env.DATABASE_IMAGE_TAG }}
         APP_IMAGE_TAG: ${{ env.APP_IMAGE_TAG }}
         NGINX_IMAGE_TAG: ${{ env.NGINX_IMAGE_TAG }}
       run: docker compose -f deployable/docker-compose.yaml build
+
     - name: Push the tagged images
       run: docker compose -f deployable/docker-compose.yaml push
+
     - name: Remove built images as part of clean up
       run: docker compose -f deployable/docker-compose.yaml down --rmi all
+
   test:
+    name: Test
     needs: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
     - name: Login into ghcr
       run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.REPOSITORY_OWNER }} --password-stdin
+
     - name: Pull the tagged images
       env: 
         DATABASE_IMAGE_TAG: ${{ env.DATABASE_IMAGE_TAG }}
         APP_IMAGE_TAG: ${{ env.APP_IMAGE_TAG }}
         NGINX_IMAGE_TAG: ${{ env.NGINX_IMAGE_TAG }}
       run: docker compose -f deployable/docker-compose.yaml pull
+
     - name: Run the tagged images
       run: docker compose -f deployable/docker-compose.yaml up --detach
+
     - name: Stop images and remove the created entities
       run: docker compose -f deployable/docker-compose.yaml down --rmi all
+
   release:
+    name: Release
     needs: [build, test]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
     - name: Login into ghcr
       run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.REPOSITORY_OWNER }} --password-stdin
+
     - name: Pull the tagged images
       env: 
         DATABASE_IMAGE_TAG: ${{ env.DATABASE_IMAGE_TAG }}
         APP_IMAGE_TAG: ${{ env.APP_IMAGE_TAG }}
         NGINX_IMAGE_TAG: ${{ env.NGINX_IMAGE_TAG }}
       run: docker compose -f deployable/docker-compose.yaml pull
+
     - name: Re-tag the already tagged images as release
       run: >
           docker tag $DATABASE_IMAGE_TAG $DATABASE_RELEASE_IMAGE_TAG;
           docker tag $APP_IMAGE_TAG $APP_RELEASE_IMAGE_TAG;
           docker tag $NGINX_IMAGE_TAG $NGINX_RELEASE_IMAGE_TAG;
+
     - name: Push the release-tagged images
       env: 
         DATABASE_IMAGE_TAG: ${{ env.DATABASE_RELEASE_IMAGE_TAG }}
         APP_IMAGE_TAG: ${{ env.APP_RELEASE_IMAGE_TAG }}
         NGINX_IMAGE_TAG: ${{ env.NGINX_RELEASE_IMAGE_TAG }}
       run: docker compose -f deployable/docker-compose.yaml push
+
     - name: Remove images as part of clean up
       run: docker compose -f deployable/docker-compose.yaml down --rmi all
+
+  deploy:
+    name: "Deploy"
+    needs: [build, test, release]
+    strategy:
+      fail-fast: true
+      matrix:
+        target: [Development, Production]
+    uses: ./.github/workflows/deployment.yaml
+    with:
+      target-env: ${{ matrix.target }}
+    secrets: inherit
