@@ -15,8 +15,8 @@ WORKDIR $LOCAL_DIR
 # Start with clean slate
 RUN rm -rf $BUILD_PATH
 # Copy server code to build path
-COPY app/server/src $BUILD_PATH
-COPY app/server/package*.json $BUILD_PATH
+COPY server/src $BUILD_PATH
+COPY server/package*.json $BUILD_PATH
 
 WORKDIR $BUILD_PATH
 
@@ -26,11 +26,11 @@ RUN npm install --prod --no-audit --no-fund && rm -rf ./package*
 WORKDIR $TEMP_CLIENT_PATH
 
 # Copy client files to temporary directory
-COPY app/client/config config
-COPY app/client/public public
-COPY app/client/scripts scripts
-COPY app/client/src src
-COPY app/client/package*.json .
+COPY client/config config
+COPY client/public public
+COPY client/scripts scripts
+COPY client/src src
+COPY client/package*.json .
 
 # Install client dependencies
 RUN npm install --production=false --no-audit --no-fund
