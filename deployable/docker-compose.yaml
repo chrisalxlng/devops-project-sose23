@@ -5,7 +5,7 @@ services:
     image: ${DATABASE_IMAGE_TAG}
     container_name: database
     build:
-      dockerfile: database/Dockerfile
+      context: database
     ports:
       - 27017:27017
     volumes:
@@ -21,7 +21,7 @@ services:
     platform: linux/amd64
     container_name: app
     build:
-      dockerfile: Dockerfile
+      context: app
     ports:
       - 3000:3000
     depends_on:
@@ -35,7 +35,7 @@ services:
   nginx:
     image: ${NGINX_IMAGE_TAG}
     build:
-      dockerfile: nginx/Dockerfile
+      context: nginx
     container_name: nginx
     ports:
       - 80:80
