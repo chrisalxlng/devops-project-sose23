@@ -39,10 +39,13 @@ services:
     container_name: nginx
     ports:
       - 80:80
+      - 443:443
     depends_on:
       - app
+    restart: always
     volumes:
       - app_data:/usr/share/nginx/html
+      - ./certs/:/etc/nginx/ssl/:ro
 
 volumes:
   mongodb_data:

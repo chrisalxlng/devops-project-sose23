@@ -13,6 +13,7 @@ resource "aws_instance" "vm" {
   vpc_security_group_ids = [
     aws_security_group.allow-ssh-inbound.id,
     aws_security_group.allow-http-inbound.id,
+    aws_security_group.allow-https-inbound.id,
     aws_security_group.allow-all-outbound.id
   ]
 
@@ -34,6 +35,15 @@ resource "aws_security_group" "allow-http-inbound" {
   ingress {
     from_port = 80
     to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "allow-https-inbound" {
+  ingress {
+    from_port = 443
+    to_port = 443
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
