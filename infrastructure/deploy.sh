@@ -63,5 +63,5 @@ echo -e \"DATABASE_IMAGE_TAG=$DATABASE_IMAGE_TAG\\nAPP_IMAGE_TAG=$APP_IMAGE_TAG\
 source .env &&
 chmod +x ../infrastructure/create-ssl-keys.sh && ../infrastructure/create-ssl-keys.sh &&
 echo $GHCR_TOKEN | sudo docker login ghcr.io -u $GHCR_USER --password-stdin &&
-sudo docker compose up -d --no-build
+sudo docker compose up -d --no-build --scale app=2
 "

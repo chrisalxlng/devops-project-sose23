@@ -19,11 +19,10 @@ services:
   app:
     image: ${APP_IMAGE_TAG}
     platform: linux/amd64
-    container_name: app
     build:
       context: app
     ports:
-      - 3000:3000
+      - 3000
     depends_on:
       database:
         condition: service_healthy
