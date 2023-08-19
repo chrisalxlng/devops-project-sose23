@@ -3,7 +3,7 @@ resource "aws_key_pair" "ssh" {
 }
 
 resource "aws_instance" "vm" {
-  instance_type = "t2.nano"
+  instance_type = "t2.micro"
   ami = data.aws_ami.image.id
 
   key_name = aws_key_pair.ssh.key_name
