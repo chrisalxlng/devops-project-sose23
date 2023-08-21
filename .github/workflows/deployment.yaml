@@ -29,21 +29,43 @@ jobs:
           SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
         run: chmod +x infrastructure/configure-ssh.sh && infrastructure/configure-ssh.sh
 
-      - name: Create EC2 instance if not already present
+      - name: Create new EC2 instance
+        id: create_instance
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
           AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
           TF_VAR_EIP_ALLOCATION_ID: ${{ vars.AWS_EIP_ALLOCATION_ID }}
-        run: chmod +x infrastructure/ec2-up.sh && infrastructure/ec2-up.sh
+        run: |
+          chmod +x infrastructure/ec2-up.sh && infrastructure/ec2-up.sh      
 
       - name: Deploy app via SSH
         env:
-          AWS_EIP_IPV4: ${{ vars.AWS_EIP_IPV4 }}
+          INSTANCE_IPV4: ${{ steps.create_instance.outputs.instance_ipv4 }}
           GHCR_USER: ${{ github.REPOSITORY_OWNER }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           DATABASE_IMAGE_TAG: ${{ env.DATABASE_RELEASE_IMAGE_TAG }}
           APP_IMAGE_TAG: ${{ env.APP_RELEASE_IMAGE_TAG }}
           NGINX_IMAGE_TAG: ${{ env.NGINX_RELEASE_IMAGE_TAG }}
         run: chmod +x infrastructure/deploy.sh && infrastructure/deploy.sh
+
+      - name: Route traffic to new instance when healthy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+          EIP_ALLOCATION_ID: ${{ vars.AWS_EIP_ALLOCATION_ID }}
+          INSTANCE_ID: ${{ steps.create_instance.outputs.instance_id }}
+          INSTANCE_IPV4: ${{ steps.create_instance.outputs.instance_ipv4 }}
+        run: chmod +x infrastructure/reroute-traffic.sh && infrastructure/reroute-traffic.sh
+
+      - name: Terminate previous instance
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+          PREVIOUS_INSTANCE_ID: ${{ steps.create_instance.outputs.previous_instance_id }}
+        run: chmod +x infrastructure/terminate-ec2.sh && infrastructure/terminate-ec2.sh

@@ -57,8 +57,3 @@ resource "aws_security_group" "allow-all-outbound" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-resource "aws_eip_association" "eip_assoc" {
-  instance_id   = aws_instance.vm.id
-  allocation_id = var.EIP_ALLOCATION_ID
-}

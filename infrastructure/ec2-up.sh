@@ -1,19 +1,21 @@
 #!/bin/bash
 
-INSTANCE_ID=$(aws ec2 describe-instances \
+PREVIOUS_INSTANCE_ID=$(aws ec2 describe-instances \
   --filters "Name=tag:name,Values=todo-app" "Name=instance-state-name,Values=running" \
   --query "Reservations[0].Instances[0].InstanceId" \
   --output text)
 
-if [ "$INSTANCE_ID" = "None" ]; then
-    echo "EC2 instance is not running. Creating..."
-    
-    terraform -chdir=infrastructure init
+echo "previous_instance_id=$PREVIOUS_INSTANCE_ID" >> "$GITHUB_OUTPUT"
 
-    terraform -chdir=infrastructure apply \
-        -var 'SSH_PUBLIC_KEY_PATH=./.ssh/operator.pub' \
-        -auto-approve
+echo "Creating new EC2 instance..."
 
-else
-    echo "EC2 instance is already running. Skipping creation."
-fi
+terraform -chdir=infrastructure init
+
+terraform -chdir=infrastructure apply \
+    -var 'SSH_PUBLIC_KEY_PATH=./.ssh/operator.pub' \
+    -auto-approve
+
+INSTANCE_IPV4=$(terraform -chdir=infrastructure output -raw 'instance_ipv4')
+echo "instance_ipv4=$INSTANCE_IPV4" >> "$GITHUB_OUTPUT"
+INSTANCE_ID=$(terraform -chdir=infrastructure output -raw 'instance_id')
+echo "instance_id=$INSTANCE_ID" >> "$GITHUB_OUTPUT"    
