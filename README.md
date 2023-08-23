@@ -31,3 +31,8 @@ Some variables differ for each environment. To create an environment variable on
 
 1. Create an `Elastic IP`. To do that: Open the AWS management console and open `EC2` > `Network & Security` > `Elastic IPs`. Now click on `Allocate Elastic IP address`, leave all settings unchanged and click on `Allocate`. You should now see your new elastic IP in the list. Click on it and copy the value `Allocation ID`.
     - Create an environment variable with the name `AWS_EIP_ALLOCATION_ID` and put in your copied allocation ID as the value.
+2. Setup a domain like described down below. Then create an environment variable with the name `DOMAIN` and put in your domain as the value (e.g. `example.com`).
+
+### FQDN
+
+TODO

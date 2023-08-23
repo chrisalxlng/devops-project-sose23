@@ -1,5 +1,5 @@
-#!/bin/bash
+ #!/bin/bash
 
-path=certs
-sudo mkdir -p "$path"
-sudo openssl req -x509 -nodes -newkey rsa:4098 -keyout "$path/privkey.pem" -out "$path/fullchain.pem" -subj "/CN=localhost"
+CERTIFICATES_PATH=certbot/conf/live/dev.christopherlang.me
+sudo mkdir -p "$CERTIFICATES_PATH"
+sudo openssl req -x509 -nodes -newkey rsa:4098 -days 1 -keyout "$CERTIFICATES_PATH/privkey.pem" -out "$CERTIFICATES_PATH/fullchain.pem" -subj "/CN=localhost"
