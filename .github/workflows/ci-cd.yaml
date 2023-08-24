@@ -29,6 +29,7 @@ jobs:
         DATABASE_IMAGE_TAG: ${{ env.DATABASE_IMAGE_TAG }}
         APP_IMAGE_TAG: ${{ env.APP_IMAGE_TAG }}
         NGINX_IMAGE_TAG: ${{ env.NGINX_IMAGE_TAG }}
+        DOMAIN: ${{ vars.DOMAIN }}
       run: docker compose -f deployable/docker-compose.yaml build
 
     - name: Push the tagged images

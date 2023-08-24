@@ -1,12 +1,14 @@
 #!/bin/bash
 
-CERTIFICATES_PATH=certbot/conf/live/dev.christopherlang.me
+DOMAIN="$1"
+
+CERTIFICATES_PATH=certbot/conf/live/${DOMAIN}
 
 echo "Deleting temporary self-signed certificates..."
-sudo rm -rf sudo rm -rf certbot/conf/live/dev.christopherlang.me/
+sudo rm -rf sudo rm -rf $CERTIFICATES_PATH
 
 echo "Requesting new certificate..."
-sudo docker compose run --rm  certbot certonly --register-unsafely-without-email --webroot --webroot-path /var/www/certbot/ --agree-tos -d dev.christopherlang.me
+sudo docker compose run --rm  certbot certonly --register-unsafely-without-email --webroot --webroot-path /var/www/certbot/ --agree-tos -d $DOMAIN
 
 echo "Reloading nginx..."
 sudo docker compose exec nginx nginx -s reload

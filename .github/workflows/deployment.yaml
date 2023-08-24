@@ -48,6 +48,7 @@ jobs:
           DATABASE_IMAGE_TAG: ${{ env.DATABASE_RELEASE_IMAGE_TAG }}
           APP_IMAGE_TAG: ${{ env.APP_RELEASE_IMAGE_TAG }}
           NGINX_IMAGE_TAG: ${{ env.NGINX_RELEASE_IMAGE_TAG }}
+          DOMAIN: ${{ vars.DOMAIN }}
         run: chmod +x infrastructure/deploy.sh && infrastructure/deploy.sh
 
       - name: Route traffic to new instance when healthy
@@ -63,7 +64,7 @@ jobs:
 
       - name: Configure SSL certificates with certbot
         env:
-          DOMAIN: dev.christopherlang.me
+          DOMAIN: ${{ vars.DOMAIN }}
         run: chmod +x infrastructure/configure-ssl-keys.sh && infrastructure/configure-ssl-keys.sh
 
       - name: Terminate previous instance

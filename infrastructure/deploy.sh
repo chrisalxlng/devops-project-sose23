@@ -52,9 +52,9 @@ ssh -o StrictHostKeyChecking=no -i infrastructure/.ssh/operator -l ubuntu $INSTA
 sudo snap install docker &&
 git clone https://github.com/chrisalxlng/devops-project-sose23.git &&
 cd devops-project-sose23/deployable &&
-echo -e \"DATABASE_IMAGE_TAG=$DATABASE_IMAGE_TAG\\nAPP_IMAGE_TAG=$APP_IMAGE_TAG\\nNGINX_IMAGE_TAG=$NGINX_IMAGE_TAG\" > .env &&
+echo -e \"DATABASE_IMAGE_TAG=$DATABASE_IMAGE_TAG\\nAPP_IMAGE_TAG=$APP_IMAGE_TAG\\nNGINX_IMAGE_TAG=$NGINX_IMAGE_TAG\\nDOMAIN=$DOMAIN\" > .env &&
 source .env &&
-chmod +x ../infrastructure/create-ssl-keys.sh && ../infrastructure/create-ssl-keys.sh &&
+chmod +x ../infrastructure/create-ssl-keys.sh && ../infrastructure/create-ssl-keys.sh \"$DOMAIN\" &&
 echo $GHCR_TOKEN | sudo docker login ghcr.io -u $GHCR_USER --password-stdin &&
 sudo docker compose up -d --no-build --scale app=2
 "

@@ -28,5 +28,5 @@ echo "Instance is ready. Configuring SSL certificates..."
 ssh -o StrictHostKeyChecking=no -i infrastructure/.ssh/operator -l ubuntu $DOMAIN "
 cd devops-project-sose23/deployable &&
 source .env &&
-chmod +x ../infrastructure/certbot.sh && ../infrastructure/certbot.sh
+chmod +x ../infrastructure/certbot.sh && ../infrastructure/certbot.sh \"$DOMAIN\"
 "
