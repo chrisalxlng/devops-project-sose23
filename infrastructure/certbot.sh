@@ -8,7 +8,7 @@ echo "Deleting temporary self-signed certificates..."
 sudo rm -rf sudo rm -rf $CERTIFICATES_PATH
 
 echo "Requesting new certificate..."
-sudo docker compose run --rm  certbot certonly --register-unsafely-without-email --webroot --webroot-path /var/www/certbot/ --agree-tos -d $DOMAIN
+sudo docker compose run --rm  certbot certonly --test-cert --register-unsafely-without-email --webroot --webroot-path /var/www/certbot/ --agree-tos -d $DOMAIN
 
 echo "Reloading nginx..."
 sudo docker compose exec nginx nginx -s reload
