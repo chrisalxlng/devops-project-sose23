@@ -3,9 +3,11 @@
 TIMEOUT_SECONDS=180
 START_TIME=$(date +%s)
 
+sleep 10
+
 echo "Waiting for SSH to be reachable..."
 while true; do
-    ssh -o StrictHostKeyChecking=no -v -i infrastructure/.ssh/operator -l ubuntu $DOMAIN exit 2>/dev/null
+    ssh -o StrictHostKeyChecking=no -vvv -i infrastructure/.ssh/operator -l ubuntu $DOMAIN exit 2>/dev/null
     if [ $? -eq 0 ]; then
         break
     fi
@@ -18,6 +20,7 @@ while true; do
         exit 1
     fi
 
+    echo "Connection refused. Retrying..."
     sleep 5
 done
 
