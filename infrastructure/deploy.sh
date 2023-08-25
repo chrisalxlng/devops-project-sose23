@@ -51,7 +51,7 @@ sleep 3
 ssh -o StrictHostKeyChecking=no -i infrastructure/.ssh/operator -l ubuntu $INSTANCE_IPV4 "
 sudo snap install docker &&
 sudo snap install aws-cli --classic &&
-git clone https://github.com/chrisalxlng/devops-project-sose23.git &&
+git clone https://github.com/$REPOSITORY.git &&
 cd devops-project-sose23/deployable &&
 echo -e \"DATABASE_IMAGE_TAG=$DATABASE_IMAGE_TAG\\nAPP_IMAGE_TAG=$APP_IMAGE_TAG\\nNGINX_IMAGE_TAG=$NGINX_IMAGE_TAG\\nDOMAIN=$DOMAIN\" > .env &&
 source .env &&

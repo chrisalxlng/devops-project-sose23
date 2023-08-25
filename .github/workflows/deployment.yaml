@@ -50,6 +50,7 @@ jobs:
 
       - name: Deploy app via SSH
         env:
+          REPOSITORY: ${{ github.REPOSITORY }}
           INSTANCE_IPV4: ${{ steps.create_instance.outputs.instance_ipv4 }}
           GHCR_USER: ${{ github.REPOSITORY_OWNER }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
