@@ -11,16 +11,12 @@ sudo aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
 sudo aws configure set aws_session_token "$AWS_SESSION_TOKEN"
 sudo aws configure set region "$AWS_DEFAULT_REGION"
 
-BUCKETS=$(sudo aws s3api list-buckets --query 'Buckets[].Name' --output text)
-FILTERED_BUCKETS=$(echo "$BUCKETS" | grep "^$DOMAIN")
-LATEST_BUCKET=""
-LATEST_CREATION_DATE=""
-
-for BUCKET in $FILTERED_BUCKETS; do
-    CREATION_DATE=$(sudo aws s3api head-bucket --bucket "$BUCKET" --query 'CreationDate' --output text)
-    if [ -z "$LATEST_CREATION_DATE" ] || [[ "$CREATION_DATE" > "$LATEST_CREATION_DATE" ]]; then
-        LATEST_CREATION_DATE="$CREATION_DATE"
-        LATEST_BUCKET="$BUCKET"
+BUCKETS=($(sudo aws s3api list-buckets --query 'Buckets[].Name' --output text))
+MATCHED_BUCKET=""
+for BUCKET in "${BUCKETS[@]}"; do
+    if [[ "$BUCKET" == "$DOMAIN"* ]]; then
+        MATCHED_BUCKET="$BUCKET"
+        break
     fi
 done
 
@@ -31,7 +27,7 @@ sudo mkdir -p "$TEMP_DIR_PATH"
 sudo mkdir -p "$CERTIFICATES_PATH"
 
 echo "Downloading certificates from S3..."
-sudo aws s3 sync "s3://$LATEST_BUCKET" "$TEMP_DIR_PATH"
+sudo aws s3 sync "s3://$MATCHED_BUCKET" "$TEMP_DIR_PATH"
 
 if [ -z "$(ls -A "$TEMP_DIR_PATH")" ]; then
     echo "No certificates to download. Creating temporary self-signed one..."
