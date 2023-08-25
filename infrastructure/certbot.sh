@@ -22,7 +22,7 @@ if [ "$SSL_CN" = "localhost" ]; then
     sudo rm -rf sudo rm -rf $CERTIFICATES_PATH
 
     echo "Requesting new certificate..."
-    sudo docker compose run --rm  certbot certonly --test-cert --register-unsafely-without-email --webroot --webroot-path /var/www/certbot/ --agree-tos -d $DOMAIN
+    sudo docker compose run --rm  certbot certonly --register-unsafely-without-email --webroot --webroot-path /var/www/certbot/ --agree-tos -d $DOMAIN
 
     echo "Creating new bucket..."
     sudo aws s3api create-bucket --bucket $UNIQUE_BUCKET_NAME
