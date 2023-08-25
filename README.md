@@ -7,6 +7,12 @@
 
 ## Steps to reproduce
 
+In the following you can find all steps necessary to reproduce this setup.
+
+### Prerequisites
+
+For the deployment to work correctly, please make sure that the repository is public. Also it is assumed that you're already in possesion of a domain.
+
 ### Variables & Secrets
 
 #### Repository secrets
