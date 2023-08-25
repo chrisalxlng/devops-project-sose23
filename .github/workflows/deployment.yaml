@@ -23,6 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Create DNS record for ${{ vars.DOMAIN }} if not existing already
+        env:
+          AWS_HOSTED_ZONE_ID: ${{ vars.AWS_HOSTED_ZONE_ID }}
+          AWS_EIP_ALLOCATION_ID: ${{ vars.AWS_EIP_ALLOCATION_ID }}
+          DOMAIN: ${{ vars.DOMAIN }}
+        run: chmod +x infrastructure/configure-dns-records.sh && infrastructure/configure-dns-records.sh
+
       - name: Configure SSH keys
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
