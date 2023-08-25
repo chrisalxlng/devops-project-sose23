@@ -6,7 +6,7 @@ START_TIME=$(date +%s)
 echo "Waiting for the instance to be in the running state..."
 while true; do
     INSTANCE_ID=$(aws ec2 describe-instances \
-        --filters "Name=tag:name,Values=todo-app" "Name=instance-state-name,Values=running" \
+        --filters "Name=tag:name,Values=todo-app" "Name=tag:environment,Values=${ENVIRONMENT}" "Name=instance-state-name,Values=running" \
         --query "Reservations[0].Instances[0].InstanceId" \
         --output text)
     if [ "$INSTANCE_ID" != "None" ]; then

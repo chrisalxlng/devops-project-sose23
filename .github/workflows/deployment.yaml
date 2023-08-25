@@ -36,7 +36,9 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
           AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+          ENVIRONMENT: ${{ inputs.target-env }}
           TF_VAR_EIP_ALLOCATION_ID: ${{ vars.AWS_EIP_ALLOCATION_ID }}
+          TF_VAR_ENVIRONMENT: ${{ inputs.target-env }}
         run: |
           chmod +x infrastructure/ec2-up.sh && infrastructure/ec2-up.sh      
 
@@ -49,6 +51,7 @@ jobs:
           APP_IMAGE_TAG: ${{ env.APP_RELEASE_IMAGE_TAG }}
           NGINX_IMAGE_TAG: ${{ env.NGINX_RELEASE_IMAGE_TAG }}
           DOMAIN: ${{ vars.DOMAIN }}
+          ENVIRONMENT: ${{ inputs.target-env }}
         run: chmod +x infrastructure/deploy.sh && infrastructure/deploy.sh
 
       - name: Route traffic to new instance when healthy

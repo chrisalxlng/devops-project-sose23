@@ -7,3 +7,8 @@ variable "EIP_ALLOCATION_ID" {
   type = string
   description = "Elastic IP Allocation ID"
 }
+
+variable "ENVIRONMENT" {
+  type = string
+  description = "Environment"
+}

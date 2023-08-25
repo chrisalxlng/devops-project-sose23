@@ -19,6 +19,7 @@ resource "aws_instance" "vm" {
 
   tags = {
     name = "todo-app"
+    environment = var.ENVIRONMENT
   }
 }
 
