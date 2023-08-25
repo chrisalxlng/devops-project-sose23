@@ -50,11 +50,12 @@ sleep 3
 
 ssh -o StrictHostKeyChecking=no -i infrastructure/.ssh/operator -l ubuntu $INSTANCE_IPV4 "
 sudo snap install docker &&
+sudo snap install aws-cli --classic &&
 git clone https://github.com/chrisalxlng/devops-project-sose23.git &&
 cd devops-project-sose23/deployable &&
 echo -e \"DATABASE_IMAGE_TAG=$DATABASE_IMAGE_TAG\\nAPP_IMAGE_TAG=$APP_IMAGE_TAG\\nNGINX_IMAGE_TAG=$NGINX_IMAGE_TAG\\nDOMAIN=$DOMAIN\" > .env &&
 source .env &&
-chmod +x ../infrastructure/create-ssl-keys.sh && ../infrastructure/create-ssl-keys.sh \"$DOMAIN\" &&
+chmod +x ../infrastructure/create-ssl-keys.sh && ../infrastructure/create-ssl-keys.sh \"$DOMAIN\" \"$AWS_ACCESS_KEY_ID\" \"$AWS_SECRET_ACCESS_KEY\" \"$AWS_SESSION_TOKEN\" \"$AWS_DEFAULT_REGION\" &&
 echo $GHCR_TOKEN | sudo docker login ghcr.io -u $GHCR_USER --password-stdin &&
 sudo docker compose up -d --no-build --scale app=2
 "

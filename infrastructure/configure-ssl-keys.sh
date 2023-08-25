@@ -31,5 +31,5 @@ echo "Instance is ready. Configuring SSL certificates..."
 ssh -o StrictHostKeyChecking=no -i infrastructure/.ssh/operator -l ubuntu $DOMAIN "
 cd devops-project-sose23/deployable &&
 source .env &&
-chmod +x ../infrastructure/certbot.sh && ../infrastructure/certbot.sh \"$DOMAIN\"
+chmod +x ../infrastructure/certbot.sh && ../infrastructure/certbot.sh \"$DOMAIN\" \"$AWS_ACCESS_KEY_ID\" \"$AWS_SECRET_ACCESS_KEY\" \"$AWS_SESSION_TOKEN\" \"$AWS_DEFAULT_REGION\"
 "
